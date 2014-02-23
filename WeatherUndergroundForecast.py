@@ -2,7 +2,7 @@ import requests
 import csv
 from datetime import datetime
 
-WUNDERGROUND_URL = "http://api.wunderground.com/api/{api}/forecast10day/q/{state}/{town}.json"
+WUNDERGROUND_URL = "http://api.wunderground.com/api/{api}/hourly10day/q/{state}/{town}.json"
 
 class UnIniterror(RuntimeError):
     def __init__(self, arg):
@@ -26,10 +26,10 @@ class WeatherUndergroundForecast(object):
     def updateForecast(self):
         if self.api_key == "UNSET" :
             raise UnInitError("No API key set")
-        if self.state == UNSET or self.town == "UNSET" :
+        if self.state == "UNSET" or self.town == "UNSET" :
             raise UnInitError("State and/or Town not set")
 
-        r = requests.get(WUNDERGROUP_URL.format(api=self.api_key,state=self.state,town=self.town))
+        r = requests.get(WUNDERGROUND_URL.format(api=self.api_key,state=self.state,town=self.town))
         self._current_forecast_data = r.json()
 
         if self._current_forecast_data['response'].has_key('error') :
@@ -53,12 +53,12 @@ class WeatherUndergroundForecast(object):
 
     # Methods to get inidividual forecasts
     def get_temp_forecast(self):
-        times,temp_dicts = get_forecast_data('temp')
+        times,temp_dicts = self.get_forecast_data('temp')
         temps = []
         for d in temp_dicts:
             try:
-                temps.append( float(temp_dicts['english']) )
-            except:
+                temps.append( float(d['english']) )
+            except ValueError:
                 temps.append(float('nan'))
         return times,temps
 
@@ -68,8 +68,8 @@ class WeatherUndergroundForecast(object):
         temps = []
         for d in temp_dicts:
             try:
-                temps.append( float(temp_dicts['english']) )
-            except:
+                temps.append( float(d['english']) )
+            except ValueError:
                 temps.append(float('nan'))
         return times,temps
 
