@@ -4,7 +4,7 @@ from datetime import datetime
 
 WUNDERGROUND_URL = "http://api.wunderground.com/api/{api}/hourly10day/q/{state}/{town}.json"
 
-class UnIniterror(RuntimeError):
+class UnInitError(RuntimeError):
     def __init__(self, arg):
         self.args = arg
 
@@ -42,7 +42,7 @@ class WeatherUndergroundForecast(object):
 
     def get_forecast_data(self,key):
         if not self.has_forecast:
-            raise UnIniterror(['No forecast data, plase update forecast'])
+            raise UnInitError(['No forecast data, plase update forecast'])
         times = []
         vals  = []
         for fcst in self._current_forecast_data['hourly_forecast']:
@@ -83,6 +83,15 @@ class WeatherUndergroundForecast(object):
                 snow.append(0)
         return times,snow
 
+    def get_pop_forecast(self):
+        times,pop_str = self.get_forecast_data('pop')
+        pop = []
+        for p in pop_str:
+            try:
+                pop.append(float(p))
+            except ValueError:
+                pop.append(0)
+        return times,pop
 
 
 

@@ -38,6 +38,9 @@ while True:
         snow_cum.append( snow_cum[-1]+s )
     snow_cum.pop(0)
 
+    # Probability of precip
+    times_pop,pop = wundergnd.get_pop_forecast()
+
     temp_data = {
         'name': "Temperature (F)",
         'x': times,
@@ -62,14 +65,25 @@ while True:
         'y': snow_cum,
         'line':{'color':'blue','thickness':3}
         }
+    pop_data = {
+        'name': "Probability of Precipitation",
+        'x': times_pop,
+        'y': pop,
+        'line':{'color':'blue','thickness':3}
+        }
     layout_temp = {'title':'Temperature Forecast'}
     layout_snow = {'title':'Snow Forecast'}
+    layout_pop  = {'title':'Probability of precip'}
+
     try:
         out=py.plot([temp_data,feels_like_data],filename="TempForecast",
                               fileopt="overwrite",layout=layout_temp,
                               world_readable=True, width=1000, height=650)
         out=py.plot([snow_rate_data,snow_cum_data],filename="SnowForecast",
                               fileopt="overwrite",layout=layout_snow,
+                              world_readable=True, width=1000, height=650)
+        out=py.plot([pop_data],filename="Pop",
+                              fileopt="overwrite",layout=layout_pop,
                               world_readable=True, width=1000, height=650)
     except:
         print "Connection Error, no update performed at ",datetime.datetime.now()
