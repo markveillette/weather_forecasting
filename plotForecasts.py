@@ -24,9 +24,19 @@ wundergnd.town  = HOME_TOWN
 
 
 while True:
+    print "Updating at ",datetime.datetime.now()
     wundergnd.updateForecast()
+
+    # Temperature
     times,temps = wundergnd.get_temp_forecast()
-    times,feelslike = wundergnd.get_feels_like_temp_forecast()
+    timesfl,feelslike = wundergnd.get_feels_like_temp_forecast()
+
+    # Snowfall
+    times_snow,snow   = wundergnd.get_snow_forecast ()
+    snow_cum = [0]
+    for s in snow:
+        snow_cum.append( snow_cum[-1]+s )
+    snow_cum.pop(0)
 
     temp_data = {
         'name': "Temperature (F)",
@@ -40,14 +50,32 @@ while True:
         'y': feelslike,
         'line':{'color':'red','thickness':3}
         }
+    snow_rate_data = {
+        'name': "Snowfall rate (in/hour)",
+        'x': times_snow,
+        'y': snow,
+        'line':{'color':'red','thickness':3}
+        }
+    snow_cum_data = {
+        'name': "Cumulative Snowfall (in)",
+        'x': times_snow,
+        'y': snow_cum,
+        'line':{'color':'blue','thickness':3}
+        }
+    layout_temp = {'title':'Temperature Forecast'}
+    layout_snow = {'title':'Snow Forecast'}
     try:
         out=py.plot([temp_data,feels_like_data],filename="TempForecast",
-                              fileopt="overwrite",
+                              fileopt="overwrite",layout=layout_temp,
+                              world_readable=True, width=1000, height=650)
+        out=py.plot([snow_rate_data,snow_cum_data],filename="SnowForecast",
+                              fileopt="overwrite",layout=layout_snow,
                               world_readable=True, width=1000, height=650)
     except:
         print "Connection Error, no update performed at ",datetime.datetime.now()
 
     # Wait an hour
+    print "...complete"
     time.sleep(60*60)
 
 

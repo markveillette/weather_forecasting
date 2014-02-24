@@ -42,7 +42,7 @@ class WeatherUndergroundForecast(object):
 
     def get_forecast_data(self,key):
         if not self.has_forecast:
-            raise UnIniterror('No forecast data, plase update forecast')
+            raise UnIniterror(['No forecast data, plase update forecast'])
         times = []
         vals  = []
         for fcst in self._current_forecast_data['hourly_forecast']:
@@ -64,7 +64,7 @@ class WeatherUndergroundForecast(object):
 
 
     def get_feels_like_temp_forecast(self):
-        times,temp_dicts = get_forecast_data('feelslike')
+        times,temp_dicts = self.get_forecast_data('feelslike')
         temps = []
         for d in temp_dicts:
             try:
@@ -73,7 +73,15 @@ class WeatherUndergroundForecast(object):
                 temps.append(float('nan'))
         return times,temps
 
-
+    def get_snow_forecast(self):
+        times,snow_dict =  self.get_forecast_data('snow')
+        snow = []
+        for d in snow_dict:
+            try:
+                snow.append(float(d['english']))
+            except:
+                snow.append(0)
+        return times,snow
 
 
 
